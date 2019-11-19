@@ -6,68 +6,75 @@ import 'Book.dart';
 import 'package:simple_futurebuilder/BookDetails.dart';
 
 class BookDashboard extends StatefulWidget {
-  BookDashboard({Key key}):super(key:key);
+  BookDashboard({Key key}) : super(key: key);
+
   @override
   _BookDashboardState createState() => _BookDashboardState();
 }
 
 class _BookDashboardState extends State<BookDashboard> {
+  List<Books> booklists = [];
 
-List<Books> booklists=[];
+  Future<List<Books>> _bookDetails() async {
+    var respnonseurl =
+        await http.get("https://my.api.mockaroo.com/books.json?key=3c694760");
+    var jsonData = json.decode(respnonseurl.body);
 
-Future<List<Books>> _bookDetails() async{
-  var respnonseurl=await http.get("https://my.api.mockaroo.com/books.json?key=3c694760");
-  var jsonData=json.decode(respnonseurl.body);
-
-  for(var bookval in jsonData){
-    Books _books=Books(bookval['bookname'], bookval['bookauthor'], bookval['bookcover'],
-        bookval['bookrating'], bookval['bookviews'], bookval['bookdetails']);
-    booklists.add(_books);
+    for (var bookval in jsonData) {
+      Books _books = Books(
+          bookval['bookname'],
+          bookval['bookauthor'],
+          bookval['bookcover'],
+          bookval['bookrating'],
+          bookval['bookviews'],
+          bookval['bookdetails']);
+      booklists.add(_books);
+    }
+    return booklists;
   }
-
-  return booklists;
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Simple  FutureBuilder"),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            FutureBuilder<List<Books>>(
+                future: _bookDetails(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
 
-            FutureBuilder(
-              future:_bookDetails() ,
-                builder: (BuildContext context,AsyncSnapshot snapshot ){
-                if(snapshot.data !=null){
-                  return Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: ListView.builder(
-                      itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context,int i){
-                        print("Hello..."+snapshot.data[i].length);
-                        return BookDetails(
-                            snapshot.data[i],
-                            snapshot.data[i].bookname,
-                            snapshot.data[i].bookauthor,
-                            snapshot.data[i].bookcover,
-                            snapshot.data[i].bookviews,
-                            snapshot.data[i].bookrating
-                        );
-                        }
-                    ),
-                  );
-                }
-                else
-                  return Container(
-                    child: Center(
-                      child: Text("Loading..."),
-                    ),
-                  );
-                }
-            ),
+                  if(snapshot.connectionState == ConnectionState.done){
+                    if (snapshot.data != null) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return BookDetails(
+                              //snapshot.data[index]
+                              bookauthor: snapshot.data[index].bookauthor,
+                              bookcover: snapshot.data[index].bookcover,
+                              bookname: snapshot.data[index].bookname,
+                              bookrating: snapshot.data[index].bookrating,
+                              bookviews: snapshot.data[index].bookviews,
+                            );
+                          });
+                    }else{
+                      return Center(
+                        child: Text('error'),
+                      );
+                    }
+                  } else {
+                    return Container(
+                      child: Center(
+                        child: Text("Loading..."),
+                      ),
+                    );
+                  }
+                }),
           ],
         ),
       ),

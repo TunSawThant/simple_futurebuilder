@@ -1,10 +1,10 @@
 class Books{
-final String bookname;
-final String bookauthor;
-final String bookcover;
-final int bookrating;
-final int bookviews;
-final String bookdetails;
+ String bookname;
+ String bookauthor;
+ String bookcover;
+ int bookrating;
+ int bookviews;
+ String bookdetails;
 
 Books(this.bookname,this.bookauthor,this.bookcover,this.bookrating,this.bookviews,this.bookdetails);
 }
