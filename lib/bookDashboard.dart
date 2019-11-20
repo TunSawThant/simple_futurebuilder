@@ -55,6 +55,7 @@ class _BookDashboardState extends State<BookDashboard> {
                           itemBuilder: (BuildContext context, int index) {
                             return BookDetails(
                               //snapshot.data[index]
+                              index: snapshot.data[index],
                               bookauthor: snapshot.data[index].bookauthor,
                               bookcover: snapshot.data[index].bookcover,
                               bookname: snapshot.data[index].bookname,
